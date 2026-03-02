@@ -6,7 +6,7 @@ const http = require('http');
 const supabase = require('./config/supabase');
 
 const app = express();
-const PORT = process.env.PORT || 3006;
+const PORT = process.env.PORT || 3007;
 
 console.log('✅ Connected to Supabase');
 

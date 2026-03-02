@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 
 // ⚠️ REPLACE THIS WITH YOUR COMPUTER'S IP IF AUTOMATIC DETECTION FAILS
-const MANUAL_IP = '10.200.66.35'; // 👈 Only needed if you are NOT using the tunnel and have connection issues.
+const MANUAL_IP = 'localhost'; // 👈 Only needed if you are NOT using the tunnel and have connection issues.
 
 // When running on a physical device, `Constants.manifest.debuggerHost`
 // contains the dev machine IP (e.g. "192.168.1.5:19000"). Use that IP so the

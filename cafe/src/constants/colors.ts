@@ -1,56 +1,61 @@
-// Professional Color System with semantic naming
+// Red Theme Color System
 export const Colors = {
-  // Backgrounds
+  // Backgrounds - White
   background: "#FFFFFF",
-  backgroundSecondary: "#F8F9FA",
-  backgroundTertiary: "#F1F3F5",
+  backgroundSecondary: "#F5F5F5",
+  backgroundTertiary: "#EEEEEE",
   
-  // Cards & Surfaces
+  // Cards & Surfaces - White
   card: "#FFFFFF",
-  cardElevated: "#FFFFFF",
-  cardHover: "#F8F9FA",
+  cardElevated: "#FAFAFA",
+  cardHover: "#F9F9F9",
   
-  // Brand Colors
-  primary: "#DC2626",
-  primaryDark: "#B91C1C",
-  primaryLight: "#FEE2E2",
-  primaryGradientStart: "#DC2626",
-  primaryGradientEnd: "#B91C1C",
+  // Brand Colors - Red
+  primary: "#DC143C",
+  primaryDark: "#B22222",
+  primaryLight: "#FF6B6B",
+  primaryGradientStart: "#DC143C",
+  primaryGradientEnd: "#FF4757",
   
-  // Secondary & Accent
-  secondary: "#1F2937",
-  accent: "#F59E0B",
-  accentLight: "#FEF3C7",
+  // Secondary & Accent - Red Accents
+  secondary: "#8B0000",
+  accent: "#FF6B6B",
+  accentLight: "#FFE5E5",
   
   // Status Colors
-  success: "#10B981",
-  successLight: "#D1FAE5",
-  error: "#EF4444",
-  errorLight: "#FEE2E2",
-  warning: "#F59E0B",
-  warningLight: "#FEF3C7",
-  info: "#3B82F6",
-  infoLight: "#DBEAFE",
+  success: "#27AE60",
+  successLight: "#D5F4E6",
+  error: "#DC143C",
+  errorLight: "#FFE5E5",
+  warning: "#FF8C00",
+  warningLight: "#FFE4B5",
+  info: "#3498DB",
+  infoLight: "#E3F2FD",
   
   // Text Colors
-  textPrimary: "#111827",
-  textSecondary: "#6B7280",
-  textTertiary: "#9CA3AF",
-  textDisabled: "#D1D5DB",
+  textPrimary: "#333333",
+  textSecondary: "#666666",
+  textTertiary: "#999999",
+  textDisabled: "#CCCCCC",
   textInverse: "#FFFFFF",
   
   // Borders
-  border: "#E5E7EB",
-  borderLight: "#F3F4F6",
-  borderDark: "#D1D5DB",
+  border: "#E0E0E0",
+  borderLight: "#F0F0F0",
+  borderDark: "#CCCCCC",
   
   // Overlays
-  overlay: "rgba(0, 0, 0, 0.5)",
-  overlayLight: "rgba(0, 0, 0, 0.3)",
+  overlay: "rgba(220, 20, 60, 0.6)",
+  overlayLight: "rgba(220, 20, 60, 0.3)",
   
   // Skeleton
-  skeleton: "#E5E7EB",
-  skeletonHighlight: "#F3F4F6",
+  skeleton: "#E0E0E0",
+  skeletonHighlight: "#F0F0F0",
+  
+  // Premium Gradients
+  gradientWarm: ["#DC143C", "#FF6B6B"],
+  gradientCoffee: ["#B22222", "#FF4757"],
+  gradientGold: ["#FF6B6B", "#FFE5E5"],
 };
 
 // Extended palette for theming
@@ -61,8 +66,8 @@ export const Palettes = {
     text: Colors.textPrimary,
   },
   dark: {
-    bg: "#111827",
-    card: "#1F2937",
-    text: "#F9FAFB",
+    bg: "#330000",
+    card: "#8B0000",
+    text: "#FFE5E5",
   },
 };

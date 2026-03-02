@@ -7,71 +7,79 @@ import {
   TouchableOpacity,
   FlatList,
 } from "react-native";
-import Animated, { FadeInDown } from "react-native-reanimated";
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Colors } from "../../src/constants/colors";
-import { Spacing, BorderRadius, Shadows } from "../../src/constants/spacing";
+import Animated, { FadeInDown, SlideInRight } from "react-native-reanimated";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import { Spacing, BorderRadius } from "../../src/constants/spacing";
 import { Typography } from "../../src/constants/fonts";
 import SearchBar from "../../src/components/SearchBar";
 import PremiumCard from "../../src/components/PremiumCard";
-import FeaturedCard from "../../src/components/FeaturedCard";
 import { useSearch } from "../../src/hooks/useMenu";
+import { useTheme } from "../../src/store/ThemeContext";
 
 export default function SearchScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
   const { results, loading } = useSearch(searchQuery);
+  const { colors } = useTheme();
 
   const renderResult = ({ item, index }: { item: any; index: number }) => (
-    <PremiumCard key={item.id} style={styles.resultCard} delay={index * 50}>
-      <TouchableOpacity 
-        style={styles.resultContent}
-        onPress={() => router.push(`/product-detail?id=${item.id}`)}
-        activeOpacity={0.7}
-      >
-        <View style={styles.resultImage}>
-          <Text style={styles.imagePlaceholder}>{item.emoji}</Text>
-        </View>
-        <View style={styles.resultInfo}>
-          <Text style={[Typography.body, { color: Colors.textPrimary }]}>
-            {item.name}
-          </Text>
-          <Text
-            style={[
-              Typography.caption,
-              { color: Colors.textSecondary, marginTop: Spacing.xs },
-            ]}
-            numberOfLines={1}
-          >
-            {item.category}
-          </Text>
-          <View style={styles.resultFooter}>
-            <Text style={[Typography.button, { color: Colors.primary }]}>
-              ₹{item.price}
+    <Animated.View entering={SlideInRight.duration(400).delay(index * 50)}>
+      <PremiumCard key={item.id} style={styles.resultCard} delay={index * 50}>
+        <TouchableOpacity 
+          style={styles.resultContent}
+          onPress={() => router.push(`/product-detail?id=${item.id}`)}
+          activeOpacity={0.7}
+        >
+          <View style={[styles.resultImage, { backgroundColor: colors.backgroundSecondary }]}>
+            <Text style={styles.imagePlaceholder}>☕</Text>
+          </View>
+          <View style={styles.resultInfo}>
+            <Text style={[Typography.body, { color: colors.textPrimary }]}>
+              {item.name}
             </Text>
-            <View style={styles.ratingBadge}>
-              <Ionicons
-                name="star"
-                size={12}
-                color={Colors.textPrimary}
-                style={{ marginRight: 2 }}
-              />
-              <Text style={[Typography.caption, { color: Colors.textPrimary }]}>
-                {item.rating}
+            <Text
+              style={[
+                Typography.caption,
+                { color: colors.textSecondary, marginTop: Spacing.xs },
+              ]}
+              numberOfLines={1}
+            >
+              {item.category}
+            </Text>
+            <View style={styles.resultFooter}>
+              <Text style={[Typography.button, { color: colors.primary }]}>
+                ₹{item.price}
               </Text>
+              <View style={[styles.ratingBadge, { backgroundColor: colors.backgroundSecondary }]}>
+                <Ionicons
+                  name="star"
+                  size={12}
+                  color={colors.textPrimary}
+                  style={{ marginRight: 2 }}
+                />
+                <Text style={[Typography.caption, { color: colors.textPrimary }]}>
+                  {item.rating}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-      </TouchableOpacity>
-    </PremiumCard>
+        </TouchableOpacity>
+      </PremiumCard>
+    </Animated.View>
   );
 
   return (
-    <View style={styles.container}>
+    <LinearGradient
+      colors={[colors.background, colors.backgroundSecondary, colors.background]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.container}
+    >
       <ScrollView showsVerticalScrollIndicator={false}>
         <Animated.View entering={FadeInDown.duration(600)} style={styles.header}>
-          <Text style={[Typography.h2, { color: Colors.textPrimary }]}>
+          <Text style={[Typography.h2, { color: colors.textPrimary }]}>
             Search
           </Text>
           <SearchBar
@@ -83,28 +91,28 @@ export default function SearchScreen() {
         </Animated.View>
 
         {searchQuery.length === 0 ? (
-          <View style={styles.emptySearch}>
+          <Animated.View entering={FadeInDown.duration(600).delay(200)} style={styles.emptySearch}>
             <Text style={{ fontSize: 48 }}>🔍</Text>
-            <Text style={[Typography.h4, { color: Colors.textPrimary, marginTop: Spacing.lg }]}>
+            <Text style={[Typography.h4, { color: colors.textPrimary, marginTop: Spacing.lg }]}>
               Start searching
             </Text>
-            <Text style={[Typography.bodySmall, { color: Colors.textSecondary, marginTop: Spacing.md, textAlign: "center" }]}>
+            <Text style={[Typography.bodySmall, { color: colors.textSecondary, marginTop: Spacing.md, textAlign: "center" }]}>
               Find your favorite items by name or category
             </Text>
-          </View>
+          </Animated.View>
         ) : loading ? (
-          <View style={styles.emptySearch}>
+          <Animated.View entering={FadeInDown.duration(600).delay(200)} style={styles.emptySearch}>
             <Text style={{ fontSize: 48 }}>⏳</Text>
-            <Text style={[Typography.h4, { color: Colors.textPrimary, marginTop: Spacing.lg }]}>
+            <Text style={[Typography.h4, { color: colors.textPrimary, marginTop: Spacing.lg }]}>
               Searching...
             </Text>
-          </View>
+          </Animated.View>
         ) : results.length > 0 ? (
-          <View style={styles.resultsContainer}>
+          <Animated.View entering={FadeInDown.duration(600).delay(200)} style={styles.resultsContainer}>
             <Text
               style={[
                 Typography.h4,
-                { color: Colors.textPrimary, marginBottom: Spacing.md },
+                { color: colors.textPrimary, marginBottom: Spacing.md },
               ]}
             >
               Results ({results.length})
@@ -116,27 +124,26 @@ export default function SearchScreen() {
               scrollEnabled={false}
               nestedScrollEnabled={false}
             />
-          </View>
+          </Animated.View>
         ) : (
-          <View style={styles.emptySearch}>
+          <Animated.View entering={FadeInDown.duration(600).delay(200)} style={styles.emptySearch}>
             <Text style={{ fontSize: 48 }}>😕</Text>
-            <Text style={[Typography.h4, { color: Colors.textPrimary, marginTop: Spacing.lg }]}>
+            <Text style={[Typography.h4, { color: colors.textPrimary, marginTop: Spacing.lg }]}>
               No results found
             </Text>
-            <Text style={[Typography.bodySmall, { color: Colors.textSecondary, marginTop: Spacing.md, textAlign: "center" }]}>
+            <Text style={[Typography.bodySmall, { color: colors.textSecondary, marginTop: Spacing.md, textAlign: "center" }]}>
               Try searching for different keywords
             </Text>
-          </View>
+          </Animated.View>
         )}
       </ScrollView>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   header: {
     paddingHorizontal: Spacing.lg,
@@ -163,7 +170,6 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.backgroundSecondary,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -182,7 +188,6 @@ const styles = StyleSheet.create({
   ratingBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.backgroundSecondary,
     paddingHorizontal: Spacing.xs,
     paddingVertical: 2,
     borderRadius: BorderRadius.sm,

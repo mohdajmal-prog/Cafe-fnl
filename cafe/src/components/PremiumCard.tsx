@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet, ViewStyle } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { Colors } from "../constants/colors";
+import { useTheme } from "../store/ThemeContext";
 import { Spacing, BorderRadius, Shadows } from "../constants/spacing";
 
 interface PremiumCardProps {
@@ -19,23 +19,22 @@ export default function PremiumCard({
   delay = 0,
   hoverable = false,
 }: PremiumCardProps) {
+  const { colors } = useTheme();
+
   return (
-    <Animated.View
-      entering={FadeInDown.delay(delay).duration(500)}
-      style={[styles.card, style]}
-    >
-      {children}
+    <Animated.View entering={FadeInDown.delay(delay).duration(500)}>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }, style]}>
+        {children}
+      </View>
     </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
     ...Shadows.md,
   },
 });

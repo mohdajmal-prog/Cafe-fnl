@@ -1,121 +1,99 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, useWindowDimensions } from "react-native";
-import Animated, {
-  FadeInUp,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from "react-native-reanimated";
-import { useRouter } from "expo-router";
-import { Colors } from "../constants/colors";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, Image, TouchableOpacity, LinearGradient } from "react-native";
 import { Spacing, BorderRadius, Shadows } from "../constants/spacing";
 import { Typography } from "../constants/fonts";
 import { MenuItem } from "../services/types";
+import { useCart } from "../store/CartContext";
+import { useTheme } from "../store/ThemeContext";
 
 interface FeaturedCardProps {
   item: MenuItem;
-  onPress?: () => void;
   delay?: number;
-  enableNavigation?: boolean;
 }
 
-export default function FeaturedCard({ item, onPress, delay = 0, enableNavigation = false }: FeaturedCardProps) {
-  const scale = useSharedValue(1);
-  const router = useRouter();
+const gradientColors = [
+  ["#D2B48C", "#8B4513"],
+  ["#F5E6D3", "#D4A574"],
+  ["#DEB887", "#A0522D"],
+  ["#F0E68C", "#8B7500"],
+];
 
-  const handlePressIn = () => {
-    scale.value = withSpring(0.98, { damping: 10, mass: 1 });
-  };
+export default function FeaturedCard({ item, delay = 0 }: FeaturedCardProps) {
+  const [quantity, setQuantity] = useState(0);
+  const { addItem, updateQuantity, removeItem } = useCart();
+  const { colors } = useTheme();
 
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 10, mass: 1 });
-  };
-
-  const handlePress = () => {
-    console.log('👆 Card clicked:', item.name, 'ID:', item.id);
-    if (enableNavigation) {
-      console.log('📦 Navigating to product-detail with ID:', item.id);
-      router.push(`/product-detail?id=${item.id}`);
-    } else if (onPress) {
-      onPress();
+  const handleAdd = () => {
+    if (quantity === 0) {
+      addItem(item, 1);
+      setQuantity(1);
+    } else {
+      updateQuantity(item.id, quantity + 1);
+      setQuantity(quantity + 1);
     }
   };
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+  const handleRemove = () => {
+    if (quantity > 1) {
+      updateQuantity(item.id, quantity - 1);
+      setQuantity(quantity - 1);
+    } else if (quantity === 1) {
+      removeItem(item.id);
+      setQuantity(0);
+    }
+  };
+
+  const gradientIndex = (item.id?.charCodeAt(0) || 0) % gradientColors.length;
+  const gradient = gradientColors[gradientIndex];
 
   return (
-    <Animated.View entering={FadeInUp.delay(delay).duration(500)}>
-      <Animated.View style={animatedStyle}>
-        <TouchableOpacity
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-          onPress={handlePress}
-          activeOpacity={0.8}
-          style={styles.card}
-        >
-        {/* Image Placeholder */}
-        <View style={styles.imageContainer}>
-          <View style={styles.imagePlaceholder}>
-            {item.image ? (
-              <Image
-                source={{ uri: item.image }}
-                style={styles.productImage}
-                resizeMode="cover"
-              />
-            ) : (
-              <Text style={styles.emoji}>☕</Text>
-            )}
+    <TouchableOpacity activeOpacity={0.8} style={[styles.card, { backgroundColor: colors.card }]}>
+      <View style={styles.imageContainer}>
+        {item.image ? (
+          <Image source={{ uri: item.image }} style={styles.productImage} resizeMode="cover" />
+        ) : (
+          <LinearGradient colors={gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.gradientPlaceholder}>
+            <Text style={styles.emoji}>☕</Text>
+          </LinearGradient>
+        )}
+        {(item.discount ?? 0) > 0 && (
+          <View style={[styles.discountTag, { backgroundColor: colors.primary }]}>
+            <Text style={styles.discountText}>{item.discount}%</Text>
           </View>
-          {(item.discount ?? 0) > 0 && (
-            <View style={styles.discountTag}>
-              <Text style={styles.discountText}>{item.discount}%</Text>
-              <Text style={[Typography.caption, { color: Colors.textPrimary }]}>
-                OFF
-              </Text>
+        )}
+      </View>
+      <View style={styles.content}>
+        <Text style={[Typography.h4, { color: colors.textPrimary }]} numberOfLines={1}>
+          {item.name}
+        </Text>
+        <Text style={[Typography.caption, { color: colors.textSecondary, marginVertical: Spacing.xs }]} numberOfLines={2}>
+          {item.description}
+        </Text>
+        <View style={[styles.footer, { borderTopColor: colors.border }]}>
+          <Text style={[Typography.button, { color: colors.primary }]}>₹{item.price}</Text>
+          {quantity === 0 ? (
+            <TouchableOpacity style={[styles.addBtn, { backgroundColor: colors.primary }]} onPress={handleAdd}>
+              <Text style={styles.addBtnText}>+</Text>
+            </TouchableOpacity>
+          ) : (
+            <View style={[styles.quantityBox, { backgroundColor: colors.backgroundSecondary }]}>
+              <TouchableOpacity onPress={handleRemove}>
+                <Text style={[styles.qtyText, { color: colors.primary }]}>−</Text>
+              </TouchableOpacity>
+              <Text style={[Typography.button, { color: colors.textPrimary }]}>{quantity}</Text>
+              <TouchableOpacity onPress={handleAdd}>
+                <Text style={[styles.qtyText, { color: colors.primary }]}>+</Text>
+              </TouchableOpacity>
             </View>
           )}
-          <View style={styles.ratingBadge}>
-            <Text style={styles.ratingText}>⭐ {item.rating}</Text>
-          </View>
         </View>
-
-        {/* Content */}
-        <View style={styles.content}>
-          <Text style={[Typography.h4, { color: Colors.textPrimary }]} numberOfLines={1}>
-            {item.name}
-          </Text>
-          <Text
-            style={[
-              Typography.caption,
-              { color: Colors.textSecondary, marginVertical: Spacing.xs },
-            ]}
-            numberOfLines={2}
-          >
-            {item.description}
-          </Text>
-
-          <View style={styles.footer}>
-            <Text style={[Typography.button, { color: Colors.primary }]}>
-              ₹{item.price}
-            </Text>
-            <View style={styles.timeTag}>
-              <Text style={[Typography.caption, { color: Colors.textSecondary }]}>
-                🕐 {item.time}
-              </Text>
-            </View>
-          </View>
-        </View>
-        </TouchableOpacity>
-      </Animated.View>
-    </Animated.View>
+      </View>
+    </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: Colors.card,
     borderRadius: BorderRadius.lg,
     overflow: "hidden",
     height: 280,
@@ -123,22 +101,19 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     height: 120,
-    backgroundColor: Colors.backgroundSecondary,
     justifyContent: "center",
     alignItems: "center",
     position: "relative",
   },
-  imagePlaceholder: {
+  productImage: {
+    width: "100%",
+    height: "100%",
+  },
+  gradientPlaceholder: {
     width: "100%",
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: Colors.backgroundSecondary,
-    overflow: "hidden",
-  },
-  productImage: {
-    width: "100%",
-    height: "100%",
   },
   emoji: {
     fontSize: 48,
@@ -147,34 +122,18 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: Spacing.md,
     left: Spacing.md,
-    backgroundColor: Colors.secondary,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 2,
-    justifyContent: "center",
-    alignItems: "center",
   },
   discountText: {
-    color: Colors.textPrimary,
+    color: "#FFFFFF",
     fontWeight: "700",
     fontSize: 14,
   },
-  ratingBadge: {
-    position: "absolute",
-    bottom: Spacing.md,
-    right: Spacing.md,
-    backgroundColor: Colors.textPrimary,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 4,
-    borderRadius: BorderRadius.md,
-  },
-  ratingText: {
-    color: Colors.card,
-    fontWeight: "600",
-    fontSize: 12,
-  },
   content: {
     padding: Spacing.md,
+    flex: 1,
   },
   footer: {
     flexDirection: "row",
@@ -183,12 +142,29 @@ const styles = StyleSheet.create({
     marginTop: Spacing.sm,
     paddingTop: Spacing.sm,
     borderTopWidth: 1,
-    borderTopColor: Colors.border,
   },
-  timeTag: {
-    backgroundColor: Colors.backgroundSecondary,
+  addBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: BorderRadius.md,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  addBtnText: {
+    fontSize: 20,
+    color: "#FFFFFF",
+    fontWeight: "600",
+  },
+  quantityBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
     paddingHorizontal: Spacing.sm,
     paddingVertical: 4,
-    borderRadius: BorderRadius.sm,
+    borderRadius: BorderRadius.md,
+  },
+  qtyText: {
+    fontSize: 16,
+    fontWeight: "600",
   },
 });

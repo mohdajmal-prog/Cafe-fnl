@@ -1,19 +1,19 @@
 import { API_BASE_URL, ENDPOINTS } from '../constants/api';
 import { Order, User, CartItem, MenuItem, Category, PauseState } from './types';
-import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // --- Auth Token Management ---
 const AUTH_TOKEN_KEY = 'authToken';
 
 const getAuthToken = async (): Promise<string | null> => {
-  return await SecureStore.getItemAsync(AUTH_TOKEN_KEY);
+  return await AsyncStorage.getItem(AUTH_TOKEN_KEY);
 };
 
 const setAuthToken = async (token: string | null) => {
   if (token) {
-    await SecureStore.setItemAsync(AUTH_TOKEN_KEY, token);
+    await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
   } else {
-    await SecureStore.deleteItemAsync(AUTH_TOKEN_KEY);
+    await AsyncStorage.removeItem(AUTH_TOKEN_KEY);
   }
 };
 // --------------------------

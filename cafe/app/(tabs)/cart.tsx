@@ -6,28 +6,26 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  ActivityIndicator,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "../../src/constants/colors";
 import { Spacing, BorderRadius, Shadows } from "../../src/constants/spacing";
 import { Typography } from "../../src/constants/fonts";
 import PremiumCard from "../../src/components/PremiumCard";
 import PremiumButton from "../../src/components/PremiumButton";
 import { useCart } from "../../src/store/CartContext";
 import { useAppPause } from "../../src/store/AppPauseContext";
+import { useTheme } from "../../src/store/ThemeContext";
 
 export default function CartScreen() {
   const router = useRouter();
   const { items, total, removeItem, updateQuantity, clearCart } = useCart();
   const { isAppPaused, pauseReason } = useAppPause();
-
-  console.log('🛒 Cart items:', items.length, items);
+  const { colors } = useTheme();
 
   const handleCheckout = () => {
-    // Navigate to payment page
     router.push("/payment");
   };
 
@@ -35,10 +33,10 @@ export default function CartScreen() {
     <PremiumCard key={item.id} style={styles.cartItem} delay={index * 50}>
       <View style={styles.itemContent}>
         <View style={styles.itemInfo}>
-          <Text style={[Typography.body, { color: Colors.textPrimary }]}>
+          <Text style={[Typography.body, { color: colors.textPrimary }]}>
             {item.name}
           </Text>
-          <Text style={[Typography.caption, { color: Colors.textSecondary }]}>
+          <Text style={[Typography.caption, { color: colors.textSecondary }]}>
             ₹{item.price} each
           </Text>
         </View>
@@ -46,20 +44,20 @@ export default function CartScreen() {
         <View style={styles.itemControls}>
           <TouchableOpacity
             onPress={() => updateQuantity(item.id, item.quantity - 1)}
-            style={styles.controlButton}
+            style={[styles.controlButton, { backgroundColor: colors.backgroundSecondary }]}
           >
-            <Ionicons name="remove" size={16} color={Colors.primary} />
+            <Ionicons name="remove" size={16} color={colors.primary} />
           </TouchableOpacity>
-          <Text style={[Typography.button, { color: Colors.textPrimary, minWidth: 30, textAlign: "center" }]}>
+          <Text style={[Typography.button, { color: colors.textPrimary, minWidth: 30, textAlign: "center" }]}>
             {item.quantity}
           </Text>
           <TouchableOpacity
             onPress={() => updateQuantity(item.id, item.quantity + 1)}
-            style={styles.controlButton}
+            style={[styles.controlButton, { backgroundColor: colors.backgroundSecondary }]}
           >
-            <Ionicons name="add" size={16} color={Colors.primary} />
+            <Ionicons name="add" size={16} color={colors.primary} />
           </TouchableOpacity>
-          <Text style={[Typography.button, { color: Colors.primary, marginLeft: Spacing.md }]}>
+          <Text style={[Typography.button, { color: colors.primary, marginLeft: Spacing.md }]}>
             ₹{item.price * item.quantity}
           </Text>
         </View>
@@ -69,33 +67,37 @@ export default function CartScreen() {
         onPress={() => removeItem(item.id)}
         style={styles.removeButton}
       >
-        <Ionicons name="trash-outline" size={16} color={Colors.error} />
+        <Ionicons name="trash-outline" size={16} color={colors.error} />
       </TouchableOpacity>
     </PremiumCard>
   );
 
   return (
-    <Animated.View entering={FadeInDown.duration(400)} style={styles.container}>
+    <LinearGradient
+      colors={[colors.background, colors.backgroundSecondary, colors.background]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.container}
+    >
       <Animated.View entering={FadeInDown.duration(600)} style={styles.header}>
-        <Text style={[Typography.h2, { color: Colors.textPrimary }]}>
+        <Text style={[Typography.h2, { color: colors.textPrimary }]}>
           Your Cart
         </Text>
         {items.length > 0 && (
-          <Text style={[Typography.caption, { color: Colors.textSecondary }]}>
+          <Text style={[Typography.caption, { color: colors.textSecondary }]}>
             {items.length} item{items.length !== 1 ? "s" : ""}
           </Text>
         )}
       </Animated.View>
 
       <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
-        {/* Pause Banner */}
         {isAppPaused && (
           <Animated.View entering={FadeInDown.duration(300)}>
-            <View style={styles.pauseBanner}>
+            <View style={[styles.pauseBanner, { backgroundColor: colors.backgroundSecondary }]}>
               <Text style={styles.pauseIcon}>⏸️</Text>
               <View style={{ flex: 1 }}>
-                <Text style={styles.pauseTitle}>Cafe Temporarily Paused</Text>
-                <Text style={styles.pauseSubtitle}>{pauseReason || 'Stock update in progress'}</Text>
+                <Text style={[styles.pauseTitle, { color: colors.textPrimary }]}>Cafe Temporarily Paused</Text>
+                <Text style={[styles.pauseSubtitle, { color: colors.textSecondary }]}>{pauseReason || 'Stock update in progress'}</Text>
               </View>
             </View>
           </Animated.View>
@@ -104,10 +106,10 @@ export default function CartScreen() {
         {items.length > 0 ? (
           <>
             {isAppPaused && (
-              <View style={styles.pauseOverlay}>
+              <View style={[styles.pauseOverlay, { backgroundColor: colors.backgroundSecondary }]}>
                 <Text style={styles.pauseOverlayIcon}>⏸️</Text>
-                <Text style={styles.pauseOverlayText}>Ordering is temporarily disabled</Text>
-                <Text style={styles.pauseOverlaySubtext}>{pauseReason || 'Please wait while we update our menu'}</Text>
+                <Text style={[styles.pauseOverlayText, { color: colors.textPrimary }]}>Ordering is temporarily disabled</Text>
+                <Text style={[styles.pauseOverlaySubtext, { color: colors.textSecondary }]}>{pauseReason || 'Please wait while we update our menu'}</Text>
               </View>
             )}
             <View style={styles.itemsContainer}>
@@ -120,22 +122,21 @@ export default function CartScreen() {
               />
             </View>
 
-            {/* Price Summary */}
             <PremiumCard style={styles.summaryCard}>
               <View style={styles.summaryRow}>
-                <Text style={[Typography.body, { color: Colors.textSecondary }]}>
+                <Text style={[Typography.body, { color: colors.textSecondary }]}>
                   Subtotal
                 </Text>
-                <Text style={[Typography.body, { color: Colors.textPrimary }]}>
+                <Text style={[Typography.body, { color: colors.textPrimary }]}>
                   ₹{total}
                 </Text>
               </View>
 
               <View style={[styles.summaryRow, { marginTop: Spacing.md }]}>
-                <Text style={[Typography.body, { color: Colors.textSecondary }]}>
+                <Text style={[Typography.body, { color: colors.textSecondary }]}>
                   Delivery Fee
                 </Text>
-                <Text style={[Typography.body, { color: Colors.textPrimary }]}>
+                <Text style={[Typography.body, { color: colors.textPrimary }]}>
                   Free
                 </Text>
               </View>
@@ -143,13 +144,13 @@ export default function CartScreen() {
               <View
                 style={[
                   styles.summaryRow,
-                  { marginTop: Spacing.md, paddingTop: Spacing.md, borderTopWidth: 1, borderTopColor: Colors.border },
+                  { marginTop: Spacing.md, paddingTop: Spacing.md, borderTopWidth: 1, borderTopColor: colors.border },
                 ]}
               >
-                <Text style={[Typography.h4, { color: Colors.textPrimary }]}>
+                <Text style={[Typography.h4, { color: colors.textPrimary }]}>
                   Total
                 </Text>
-                <Text style={[Typography.h3, { color: Colors.primary }]}>
+                <Text style={[Typography.h3, { color: colors.primary }]}>
                   ₹{total}
                 </Text>
               </View>
@@ -158,17 +159,16 @@ export default function CartScreen() {
         ) : (
           <View style={styles.emptyState}>
             <Text style={{ fontSize: 64 }}>🛒</Text>
-            <Text style={[Typography.h3, { color: Colors.textPrimary, marginTop: Spacing.lg }]}>
+            <Text style={[Typography.h3, { color: colors.textPrimary, marginTop: Spacing.lg }]}>
               Your cart is empty
             </Text>
-            <Text style={[Typography.bodySmall, { color: Colors.textSecondary, marginTop: Spacing.md, textAlign: "center" }]}>
+            <Text style={[Typography.bodySmall, { color: colors.textSecondary, marginTop: Spacing.md, textAlign: "center" }]}>
               Add delicious items from our menu
             </Text>
           </View>
         )}
       </ScrollView>
 
-      {/* Footer */}
       {items.length > 0 && (
         <View style={styles.footer}>
           <PremiumButton
@@ -186,14 +186,13 @@ export default function CartScreen() {
           />
         </View>
       )}
-    </Animated.View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.background,
   },
   header: {
     paddingHorizontal: Spacing.lg,
@@ -226,7 +225,6 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: BorderRadius.sm,
-    backgroundColor: Colors.backgroundSecondary,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -258,93 +256,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  modalHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.lg,
-  },
-  closeButton: {
-    marginRight: Spacing.md,
-    padding: Spacing.xs,
-  },
-  modalScrollView: {
-    flex: 1,
-  },
-  modalSummaryCard: {
-    marginHorizontal: Spacing.lg,
-    marginVertical: Spacing.lg,
-  },
-  modalItemRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: Spacing.sm,
-  },
-  modalPaymentSection: {
-    marginHorizontal: Spacing.lg,
-    marginBottom: Spacing.lg,
-  },
-  modalPaymentMethods: {
-    gap: Spacing.md,
-  },
-  modalPaymentMethodCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    backgroundColor: Colors.card,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
-    ...Shadows.sm,
-  },
-  modalSelectedPaymentCard: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary + "10",
-  },
-  modalPaymentMethodLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  modalPaymentIcon: {
-    width: 50,
-    height: 50,
-    borderRadius: BorderRadius.md,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: Spacing.md,
-  },
-  modalPaymentInfo: {
-    flex: 1,
-  },
-  modalRadioButton: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: Colors.border,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalRadioButtonSelected: {
-    borderColor: Colors.primary,
-  },
-  modalRadioButtonInner: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: Colors.primary,
-  },
-  modalFooter: {
-    paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.lg,
-  },
   pauseBanner: {
     flexDirection: "row",
     alignItems: "center",
@@ -352,7 +263,6 @@ const styles = StyleSheet.create({
     marginVertical: Spacing.md,
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    backgroundColor: "#FFA50030",
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     borderColor: "#FFA500",
@@ -364,16 +274,13 @@ const styles = StyleSheet.create({
   pauseTitle: {
     fontSize: 14,
     fontWeight: "700",
-    color: Colors.textPrimary,
     marginBottom: 2,
   },
   pauseSubtitle: {
     fontSize: 12,
     fontWeight: "400",
-    color: Colors.textSecondary,
   },
   pauseOverlay: {
-    backgroundColor: "rgba(255, 165, 0, 0.15)",
     borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
     marginHorizontal: Spacing.lg,
@@ -389,14 +296,12 @@ const styles = StyleSheet.create({
   pauseOverlayText: {
     fontSize: 16,
     fontWeight: "700",
-    color: Colors.textPrimary,
     marginBottom: Spacing.sm,
     textAlign: "center",
   },
   pauseOverlaySubtext: {
     fontSize: 12,
     fontWeight: "400",
-    color: Colors.textSecondary,
     textAlign: "center",
   },
 });

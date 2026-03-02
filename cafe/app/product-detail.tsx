@@ -100,16 +100,10 @@ export default function ProductDetailScreen() {
 
     setIsProcessing(true);
     try {
-      // Simulate payment processing
       await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Create the order
       const cartItems: CartItem[] = [{ ...product, quantity }];
       const order = await orderService.createOrder(cartItems);
-
       setShowPaymentModal(false);
-
-      // Navigate to success screen with actual order ID
       router.push({
         pathname: "/order-success",
         params: { 
@@ -153,13 +147,11 @@ export default function ProductDetailScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Back Button */}
+      <ScrollView showsVerticalScrollIndicator={false} style={styles.scrollView}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="chevron-back" size={28} color={Colors.textPrimary} />
         </TouchableOpacity>
 
-        {/* Product Image */}
         <Animated.View entering={FadeInDown.duration(600)} style={styles.imageSection}>
           <View style={styles.imageContainer}>
             {product.image ? (
@@ -179,7 +171,6 @@ export default function ProductDetailScreen() {
           )}
         </Animated.View>
 
-        {/* Product Info */}
         <Animated.View entering={FadeInDown.delay(100).duration(600)} style={styles.infoSection}>
           <View style={styles.headerRow}>
             <View style={styles.titleSection}>
@@ -213,7 +204,6 @@ export default function ProductDetailScreen() {
             {product.description}
           </Text>
 
-          {/* Category & Time */}
           <View style={styles.metaRow}>
             <View style={styles.metaItem}>
               <Ionicons name="pricetag" size={16} color={Colors.primary} />
@@ -230,7 +220,6 @@ export default function ProductDetailScreen() {
           </View>
         </Animated.View>
 
-        {/* Quantity Selector */}
         <Animated.View entering={FadeInDown.delay(200).duration(600)} style={styles.quantitySection}>
           <PremiumCard style={styles.quantityCard} delay={0}>
             <Text style={[Typography.h4, { color: Colors.textPrimary, marginBottom: Spacing.md }]}>
@@ -259,7 +248,6 @@ export default function ProductDetailScreen() {
           </PremiumCard>
         </Animated.View>
 
-        {/* Order Summary */}
         <Animated.View entering={FadeInDown.delay(300).duration(600)} style={styles.summarySection}>
           <PremiumCard style={styles.summaryCard} delay={0}>
             <View style={styles.summaryRow}>
@@ -277,30 +265,30 @@ export default function ProductDetailScreen() {
           </PremiumCard>
         </Animated.View>
 
-        {/* Order Now Button */}
-        <Animated.View entering={FadeInDown.delay(400).duration(600)} style={styles.orderButtonContainer}>
-          <PremiumButton
-            title="Order Now"
-            onPress={handleAddToCart}
-            variant="primary"
-            fullWidth
-          />
-          <PremiumButton
-            title="Add to Cart"
-            onPress={() => {
-              console.log('👆 Add to Cart clicked for:', product.name, 'Quantity:', quantity);
-              addItem(product, quantity);
-              Alert.alert('Added to Cart', `${quantity}x ${product.name} added to your cart!`);
-              router.back();
-            }}
-            variant="ghost"
-            fullWidth
-            style={{ marginTop: Spacing.md }}
-          />
-        </Animated.View>
+        <View style={{ height: 180 }} />
       </ScrollView>
 
-      {/* Payment Modal */}
+      <Animated.View entering={FadeInDown.delay(400).duration(600)} style={styles.orderButtonContainer}>
+        <PremiumButton
+          title="Order Now"
+          onPress={handleAddToCart}
+          variant="primary"
+          fullWidth
+        />
+        <PremiumButton
+          title="Add to Cart"
+          onPress={() => {
+            console.log('👆 Add to Cart clicked for:', product.name, 'Quantity:', quantity);
+            addItem(product, quantity);
+            Alert.alert('Added to Cart', `${quantity}x ${product.name} added to your cart!`);
+            router.back();
+          }}
+          variant="ghost"
+          fullWidth
+          style={{ marginTop: Spacing.md }}
+        />
+      </Animated.View>
+
       <Modal
         visible={showPaymentModal}
         transparent
@@ -319,7 +307,6 @@ export default function ProductDetailScreen() {
               <View style={{ width: 28 }} />
             </View>
 
-            {/* Payment Methods */}
             <ScrollView showsVerticalScrollIndicator={false} style={styles.paymentMethods}>
               {paymentMethods.map((method) => (
                 <TouchableOpacity
@@ -367,7 +354,6 @@ export default function ProductDetailScreen() {
               ))}
             </ScrollView>
 
-            {/* Order Summary in Modal */}
             <View style={styles.modalSummary}>
               <View style={styles.summaryRow}>
                 <Text style={[Typography.body, { color: Colors.textSecondary }]}>
@@ -394,6 +380,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.background,
+  },
+  scrollView: {
+    flex: 1,
+    paddingBottom: 180,
   },
   notFound: {
     flex: 1,
@@ -444,7 +434,7 @@ const styles = StyleSheet.create({
   },
   discountText: {
     color: Colors.textPrimary,
-    fontWeight: 700,
+    fontWeight: "700",
     fontSize: 14,
   },
   infoSection: {
@@ -506,10 +496,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   orderButtonContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
     paddingHorizontal: Spacing.lg,
-    paddingBottom: Spacing.xl * 2,
+    paddingVertical: Spacing.lg,
+    backgroundColor: Colors.background,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
   },
-  // Modal Styles
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",

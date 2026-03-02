@@ -1,28 +1,44 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
+import { Image, View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { ThemeProvider, useTheme } from '../../src/store/ThemeContext';
 
-import { Colors } from '../../src/constants/colors';
+function TabContent() {
+  const { colors } = useTheme();
 
-export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textSecondary,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: Colors.background,
-          borderTopColor: Colors.border,
-          borderTopWidth: 1,
-          height: 70,
+          backgroundColor: 'transparent',
+          borderTopWidth: 0,
+          height: 60,
           paddingBottom: 12,
           paddingTop: 8,
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
         },
+        tabBarBackground: () => (
+          <LinearGradient
+            colors={[colors.background, colors.backgroundSecondary]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ flex: 1 }}
+          />
+        ),
         tabBarLabelStyle: {
-          fontSize: 11,
-          fontWeight: '600',
-          marginTop: 4,
+          display: 'none',
+        },
+        tabBarItemStyle: {
+          borderRadius: 12,
+          marginHorizontal: 4,
         },
       }}>
       <Tabs.Screen
@@ -66,10 +82,22 @@ export default function TabLayout() {
         options={{
           title: 'Account',
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+            <Image
+              source={require('../../assets/images/ambi-logo.png')}
+              style={{ width: 50, height: 50 }}
+              resizeMode="contain"
+            />
           ),
         }}
       />
     </Tabs>
+  );
+}
+
+export default function TabLayout() {
+  return (
+    <ThemeProvider>
+      <TabContent />
+    </ThemeProvider>
   );
 }

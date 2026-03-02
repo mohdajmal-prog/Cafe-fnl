@@ -2,42 +2,41 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
-import { Colors } from "../constants/colors";
 import { Spacing, BorderRadius, Shadows } from "../constants/spacing";
 import { Typography } from "../constants/fonts";
 import { useUser } from "../store/UserContext";
+import { useTheme } from "../store/ThemeContext";
 
 export default function LuxuryHeader() {
   const { user } = useUser();
+  const { colors } = useTheme();
 
   return (
     <Animated.View entering={FadeInDown.duration(600)} style={styles.container}>
-      {/* Top Section with Greeting */}
       <View style={styles.topSection}>
         <View style={styles.greetingSection}>
-          <Text style={[Typography.bodySmall, { color: Colors.textSecondary }]}>
+          <Text style={[Typography.bodySmall, { color: colors.textSecondary }]}>
             Good Morning 👋
           </Text>
-          <Text style={[Typography.h2, { color: Colors.textPrimary }]}>
+          <Text style={[Typography.h2, { color: colors.textPrimary }]}>
             {user?.name.split(" ")[0]} welcome back!
           </Text>
         </View>
       </View>
 
-      {/* Location Bar */}
-      <TouchableOpacity style={styles.locationBar}>
-        <View style={styles.locationIcon}>
-          <Ionicons name="location" size={16} color={Colors.primary} />
+      <TouchableOpacity style={[styles.locationBar, { backgroundColor: colors.backgroundSecondary }]}>
+        <View style={[styles.locationIcon, { backgroundColor: colors.primary + "15" }]}>
+          <Ionicons name="location" size={16} color={colors.primary} />
         </View>
         <View style={styles.locationText}>
-          <Text style={[Typography.caption, { color: Colors.textSecondary }]}>
+          <Text style={[Typography.caption, { color: colors.textSecondary }]}>
             Delivery to
           </Text>
-          <Text style={[Typography.body, { color: Colors.textPrimary, fontWeight: "600" }]}>
+          <Text style={[Typography.body, { color: colors.textPrimary, fontWeight: "600" }]}>
             srm campus 📍
           </Text>
         </View>
-        <Ionicons name="chevron-down" size={16} color={Colors.textSecondary} />
+        <Ionicons name="chevron-down" size={16} color={colors.textSecondary} />
       </TouchableOpacity>
     </Animated.View>
   );
@@ -46,7 +45,7 @@ export default function LuxuryHeader() {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: Spacing.lg,
-    paddingTop: Spacing.lg,
+    paddingTop: Spacing.xl * 1.5,
     paddingBottom: Spacing.md,
   },
   topSection: {
@@ -61,7 +60,6 @@ const styles = StyleSheet.create({
   locationBar: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: Colors.backgroundSecondary,
     borderRadius: BorderRadius.lg,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
@@ -72,7 +70,6 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: BorderRadius.md,
-    backgroundColor: Colors.primary + "15",
     justifyContent: "center",
     alignItems: "center",
   },

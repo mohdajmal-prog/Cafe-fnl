@@ -53,7 +53,7 @@ export default function PaymentScreen() {
       // Navigate to success screen with actual order ID
       router.push({
         pathname: "/order-success",
-        params: { id: order.id, total: order.total.toString() },
+        params: { id: order.id || '', total: (order.total_amount || total).toString() },
       });
     } catch (error) {
       console.error('❌ Payment/Order error:', error);
